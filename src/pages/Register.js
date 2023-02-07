@@ -1,7 +1,20 @@
 import { Link as RouterLink } from "react-router-dom";
 // @mui
 import { styled } from "@mui/material/styles";
-import { Card, Link, Container, Typography } from "@mui/material";
+import {
+  Card,
+  Link,
+  Container,
+  Typography,
+  FormControl,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  Button,
+  Box,
+  Grid
+} from "@mui/material";
+import Iconify from "../components/Iconify";
 // hooks
 import useResponsive from "../lib/hooks/useResponsive";
 // components
@@ -9,6 +22,7 @@ import Page from "../components/Page";
 import DialogModal, { useDialog } from "../components/DialogModal";
 // sections
 import RegisterForm from "../components/sections/auth/register/RegisterForm";
+import { useEffect, useState } from "react";
 
 // ----------------------------------------------------------------------
 
@@ -55,11 +69,46 @@ const ContentStyle = styled("div")(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
+const userType = [
+  {
+    value: "user",
+    label: "User",
+    icon: "mdi:user-circle-outline",
+  },
+  {
+    value: "shop",
+    label: "Laundry Shop",
+    icon: "mdi:shop-location-outline",
+  },
+  {
+    value: "labandero",
+    label: "Labandero/Labandera",
+    icon: "ri:map-pin-user-line",
+  },
+];
+
 export default function Register() {
   const smUp = useResponsive("up", "sm");
   const mdUp = useResponsive("up", "md");
-
+  const [value, setValue] = useState("user");
+  const [label, setLabel] = useState("User");
   const [open, openDialog, dialogProps, setOpen] = useDialog();
+
+  useEffect(() => {
+    openDialog();
+  }, []);
+
+  const handleRadioChange = (event) => {
+    setValue(event.target.value);
+    setLabel(event.nativeEvent.target.labels[0].innerText);
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    console.log(value);
+    setOpen(!open);
+  };
 
   return (
     <Page title="Register">
@@ -89,7 +138,11 @@ export default function Register() {
 
             {/* <AuthSocial /> */}
 
-            <RegisterForm />
+            <RegisterForm
+              accountType={value}
+              accountLabel={label}
+              openDialog={openDialog}
+            />
 
             {smUp && (
               <Typography variant="body2" sx={{ mt: 3, alignSelf: "end" }}>
@@ -112,25 +165,61 @@ export default function Register() {
         </Container>
       </RootStyle>
 
-      {/* <DialogModal
+      <DialogModal
         {...dialogProps}
-        title={"Payment"}
+        title={"Register as:"}
         styles={{
           div: { textAlign: "center" },
-          title: { fontSize: 30 },
+          title: { fontSize: 25 },
           subtitle: { fontSize: 24, fontWeight: "bold" },
         }}
-        width="lg"
+        width="sm"
       >
-        <Divider sx={{ borderStyle: "dashed", marginBottom: 2 }} />
-        {clientSecret && (
-          <Payment
-            cs={clientSecret}
-            invoiceId={invoiceId}
-            planData={planData}
-          />
-        )}
-      </DialogModal> */}
+        <form onSubmit={handleSubmit}>
+          <FormControl>
+            <RadioGroup
+              aria-labelledby="demo-radio-buttons-group-label"
+              defaultValue="userType"
+              name="radio-buttons-group"
+              value={value}
+              onChange={handleRadioChange}
+            >
+              {userType.map((type, index) => {
+                return (
+                  <FormControlLabel
+                    key={index}
+                    value={type.value}
+                    control={<Radio />}
+                    label={
+                      <Grid container >
+                        <Typography sx={{ fontSize: 18, fontWeight: "bold", color: value === type.value ? "#2065D1" : null }}>
+                          {type.label}
+                        </Typography>
+                        <Iconify
+                          icon={type.icon}
+                          sx={{
+                            ml: 0.5,
+                            width: 25,
+                            height: 25,
+                            color: value === type.value ? "#2065D1" : null,
+                          }}
+                        />
+                      </Grid>
+                    }
+                  />
+                );
+              })}
+            </RadioGroup>
+            <Button
+              type="submit"
+              variant="contained"
+              sx={{ alignSelf: "end", marginTop: 5 }}
+            >
+              Save
+            </Button>
+          </FormControl>
+        </form>
+      </DialogModal>
     </Page>
   );
 }

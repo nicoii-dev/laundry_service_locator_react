@@ -12,6 +12,11 @@ const labanderoNav = [
     icon: getIcon('material-symbols:home-pin'),
   },
   {
+    title: 'About',
+    path: '/about',
+    icon: getIcon('mdi:about-circle-outline'),
+  },
+  {
     title: 'Profile',
     path: '/profile',
     icon: getIcon('carbon:user-profile'),

@@ -12,6 +12,7 @@ import {
   Avatar,
   Stack,
 } from "@mui/material";
+import { getLocalStorageItem } from "../../../lib/util/getLocalStorage";
 // hooks
 import useResponsive from "../../../lib/hooks/useResponsive";
 // components
@@ -52,10 +53,10 @@ DashboardSidebar.propTypes = {
 export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
   const { pathname } = useLocation();
   const isDesktop = useResponsive("up", "lg");
-  const userData = "shop";
+  const userData = getLocalStorageItem("userData");
   const [navConfig, setNavConfig] = useState([]);
   useEffect(() => {
-    switch (userData) {
+    switch (userData?.role) {
       case "admin":
         setNavConfig(adminNav);
         break;
@@ -107,10 +108,15 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
             />
             <Box sx={{ ml: 2 }}>
               <Typography variant="subtitle2" sx={{ color: "text.primary" }}>
-                {"Laundry Shop"}
+                {userData.first_name.charAt(0).toUpperCase() +
+                  userData.first_name.slice(1) +
+                  " " +
+                  userData.last_name.charAt(0).toUpperCase() +
+                  userData.last_name.slice(1)}
               </Typography>
               <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                {"Shop"}
+                {userData.role.charAt(0).toUpperCase() +
+                  userData.role.slice(1)}
               </Typography>
             </Box>
           </AccountStyle>

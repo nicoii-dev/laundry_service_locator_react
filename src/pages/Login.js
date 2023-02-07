@@ -76,7 +76,7 @@ export default function Login() {
               <LoginForm />
 
               {smUp && (
-                <Typography variant="body2" align="end" sx={{ mt: 3 }}>
+                <Typography variant="body2" align="right" sx={{ mt: 3 }}>
                   Don’t have an account?{" "}
                   <Link
                     variant="subtitle2"

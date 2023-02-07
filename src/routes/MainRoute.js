@@ -1,80 +1,108 @@
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import {
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+  Switch,
+  Outlet,
+} from "react-router-dom";
 //
-import { getLocalStorageItem } from '../lib/util/getLocalStorage';
+import { getLocalStorageItem } from "../lib/util/getLocalStorage";
 
 // pages
-import DashboardLayout from '../components/layout/dashboard';
-import Login from '../pages/Login';
-import Register from '../pages/Register';
-import Page404 from '../pages/Page404';
+import DashboardLayout from "../components/layout/dashboard";
+import Login from "../pages/Login";
+import Register from "../pages/Register";
+import Page404 from "../pages/Page404";
 // admin
-import AdminDashboardPage from '../pages/Admin/AdminDashboardPage';
-import ReportsPage from '../pages/Admin/ReportsPage';
-import UsersPage from '../pages/Admin/UsersPage';
+import AdminDashboardPage from "../pages/Admin/AdminDashboardPage";
+import ReportsPage from "../pages/Admin/ReportsPage";
+import UsersPage from "../pages/Admin/UsersPage";
 // user
-import HomePage from '../pages/User/HomePage';
-import AboutPage from '../pages/User/AboutPage';
+import HomePage from "../pages/User/HomePage";
+import AboutPage from "../pages/User/AboutPage";
 // labandero
-import LabanderoDashboardPage from '../pages/Labandero/LabanderoDashboardPage';
-import LabanderoProfilePage from '../pages/Labandero/LabanderoProfilePage';
+import LabanderoDashboardPage from "../pages/Labandero/LabanderoDashboardPage";
+import LabanderoProfilePage from "../pages/Labandero/LabanderoProfilePage";
 // shop
-import ShopDashboardPage from '../pages/Shop/ShopDashboardPage';
-import ServicesPage from '../pages/Shop/ServicesPage';
+import ShopDashboardPage from "../pages/Shop/ShopDashboardPage";
+import ServicesPage from "../pages/Shop/ServicesPage";
+import EmailVerification from "../pages/EmailVerification";
+import ShopProfilePage from "../pages/Shop/ShopProfilePage";
 
 // ----------------------------------------------------------------------
 
 export default function MainRoute() {
   const location = useLocation();
-  const userData = getLocalStorageItem('userData');
-  const user = 'shop1'
-  
-  if (user === 'admin') {
+  const userData = getLocalStorageItem("userData");
+
+  if (userData?.role === "admin") {
     return (
       <Routes>
         <Route path="/" element={<DashboardLayout />}>
+          <Route path="/" element={<AdminDashboardPage />} />
           <Route path="dashboard" element={<AdminDashboardPage />} />
           <Route path="users" element={<UsersPage />} />
           <Route path="reports" element={<ReportsPage />} />
-          <Route path="*" element={<Navigate to="404" state={{ from: location }} replace />} />
+          <Route
+            path="*"
+            element={<Navigate to="404" state={{ from: location }} replace />}
+          />
         </Route>
         <Route path="404" element={<Page404 />} />
       </Routes>
     );
   }
 
-  if (user === 'user') {
+  if (userData?.role === "user") {
     return (
       <Routes>
         <Route path="/" element={<DashboardLayout />}>
+          <Route path="/" element={<HomePage />} />
           <Route path="home" element={<HomePage />} />
           <Route path="about" element={<AboutPage />} />
-          <Route path="*" element={<Navigate to="404" state={{ from: location }} replace />} />
+          <Route
+            path="*"
+            element={<Navigate to="404" state={{ from: location }} replace />}
+          />
         </Route>
         <Route path="404" element={<Page404 />} />
       </Routes>
     );
   }
 
-  if (user === 'labandero') {
+  if (userData?.role === "labandero") {
     return (
       <Routes>
         <Route path="/" element={<DashboardLayout />}>
-          <Route path="home" element={<LabanderoDashboardPage />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="home" element={<HomePage />} />
+          <Route path="about" element={<AboutPage />} />
           <Route path="profile" element={<LabanderoProfilePage />} />
-          <Route path="*" element={<Navigate to="404" state={{ from: location }} replace />} />
+          <Route
+            path="*"
+            element={<Navigate to="404" state={{ from: location }} replace />}
+          />
         </Route>
         <Route path="404" element={<Page404 />} />
       </Routes>
     );
   }
 
-  if (user === 'shop') {
+  if (userData?.role === "shop") {
     return (
       <Routes>
         <Route path="/" element={<DashboardLayout />}>
-          <Route path="services" element={<ShopDashboardPage />} />
-          <Route path="profile" element={<ServicesPage />} />
-          <Route path="*" element={<Navigate to="404" state={{ from: location }} replace />} />
+          <Route path="/" element={<ShopDashboardPage />} />
+          <Route path="shops" element={<ShopDashboardPage />} />
+          <Route path="home" element={<HomePage />} />
+          <Route path="about" element={<AboutPage />} />
+          <Route path="services" element={<ServicesPage />} />
+          <Route path="profile" element={<ShopProfilePage />} />
+          <Route
+            path="*"
+            element={<Navigate to="404" state={{ from: location }} replace />}
+          />
         </Route>
         <Route path="404" element={<Page404 />} />
       </Routes>
@@ -86,8 +114,11 @@ export default function MainRoute() {
       <Route path="/" element={<Login />} />
       <Route path="login" element={<Login />} />
       <Route path="register" element={<Register />} />
+      <Route path="verify">
+        <Route path=":email/:token" element={<EmailVerification />} />
+      </Route>
       <Route path="404" element={<Page404 />} />
-      <Route path="*" element={<Navigate to="/404" state={{ from: location }} replace />} />
+      {/* <Route path="*" element={<Navigate to="/404" state={{ from: location }} replace />} /> */}
     </Routes>
   );
 }

@@ -1,9 +1,15 @@
-import React from 'react'
-
+import React from "react";
+import { Container } from "@mui/material";
+import Page from "../../components/Page";
 function LabanderoProfilePage() {
   return (
-    <div>LabanderoProfilePage</div>
-  )
+    <Page title="Profile">
+      <Container>
+      <div>LabanderoProfilePage</div>
+      </Container>
+
+    </Page>
+  );
 }
 
-export default LabanderoProfilePage
+export default LabanderoProfilePage;

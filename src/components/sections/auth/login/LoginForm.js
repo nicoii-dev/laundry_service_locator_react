@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useMutation } from 'react-query';
 // form
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -12,11 +13,14 @@ import Iconify from '../../../Iconify';
 import { FormProvider, RHFTextField } from '../../../../components/hook-form';
 import { setLocalStorageItem } from '../../../../lib/util/setLocalStorage';
 import { LoginSchema } from '../../../../lib/yup-schema/LoginSchema';
+// api
+import userApi from '../../../../lib/services/userApi';
 // ----------------------------------------------------------------------
 
 export default function LoginForm() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const { login } = userApi;
 
   const defaultValues = {
     email: '',
@@ -33,24 +37,20 @@ export default function LoginForm() {
     formState: { isSubmitting },
   } = methods;
 
-  // const { mutate: loginUser, isLoading: loginUserLoading } = useMutation((payload) => login(payload), {
-  //   onSuccess: (data) => {
-  //     setLocalStorageItem('userToken', data.data.token, 9999);
-  //     setLocalStorageItem('userData', data.data.user, 9999);
-  //     if(data.data.user.role === 'admin') {
-  //     navigate(`/dashboard`);
-  //     return;
-  //     }
-  //     navigate('/welcome')
-  //   },
-  //   onError: (error) => {
-  //     toast.error(error.response.data.message);
-  //   },
-  // });
+  const { mutate: loginUser, isLoading: loginUserLoading } = useMutation((payload) => login(payload), {
+    onSuccess: (data) => {
+      setLocalStorageItem('userToken', data.data.token, 9999);
+      setLocalStorageItem('userData', data.data.user, 9999);
+      navigate(`/`);
+    },
+    onError: (error) => {
+      toast.error(error.response.data.message);
+    },
+  });
 
   const onSubmit = async (data) => {
-    console.log(data)
-    navigate('/dashboard')
+    loginUser(data)
+    // navigate('/dashboard')
   };
 
   return (

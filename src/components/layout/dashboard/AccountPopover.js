@@ -1,32 +1,40 @@
-import { useRef, useState } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
-// import { useMutation, useQueryClient } from 'react-query';
+import { useRef, useState } from "react";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { useMutation, useQueryClient } from "react-query";
 // @mui
-import { alpha } from '@mui/material/styles';
-import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton } from '@mui/material';
+import { alpha } from "@mui/material/styles";
+import {
+  Box,
+  Divider,
+  Typography,
+  Stack,
+  MenuItem,
+  Avatar,
+  IconButton,
+} from "@mui/material";
 // components
-import MenuPopover from '../../MenuPopover';
+import MenuPopover from "../../MenuPopover";
 // mocks_
-import account from '../../_mock/account';
-// import UserApi from '../../service/UserApi';
-
+import account from "../../_mock/account";
+import userApi from "../../../lib/services/userApi";
+import { getLocalStorageItem } from "../../../lib/util/getLocalStorage";
 // ----------------------------------------------------------------------
 
 const MENU_OPTIONS = [
   {
-    label: 'Home',
-    icon: 'eva:home-fill',
-    linkTo: '/',
+    label: "Home",
+    icon: "eva:home-fill",
+    linkTo: "/",
   },
   {
-    label: 'Profile',
-    icon: 'eva:person-fill',
-    linkTo: '#',
+    label: "Profile",
+    icon: "eva:person-fill",
+    linkTo: "#",
   },
   {
-    label: 'Settings',
-    icon: 'eva:settings-2-fill',
-    linkTo: '#',
+    label: "Settings",
+    icon: "eva:settings-2-fill",
+    linkTo: "#",
   },
 ];
 
@@ -36,17 +44,21 @@ export default function AccountPopover() {
   const anchorRef = useRef(null);
   const navigate = useNavigate();
   const [open, setOpen] = useState(null);
-//   const queryClient = useQueryClient();
-//   const { logout } = UserApi;
+  const queryClient = useQueryClient();
+  const { logout } = userApi;
+  const userData = getLocalStorageItem("userData");
 
-//   const { mutate: logOut, isLoading: logOutLoading } = useMutation(() => logout(), {
-//     onSettled: () => {
-//       localStorage.removeItem('userToken');
-//       localStorage.removeItem('userData');
-//       queryClient.clear();
-//       navigate('/login', { replace: true });
-//     },
-//   });
+  const { mutate: logOut, isLoading: logOutLoading } = useMutation(
+    () => logout(),
+    {
+      onSettled: () => {
+        localStorage.removeItem("userToken");
+        localStorage.removeItem("userData");
+        queryClient.clear();
+        navigate("/login", { replace: true });
+      },
+    }
+  );
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
@@ -64,13 +76,13 @@ export default function AccountPopover() {
         sx={{
           p: 0,
           ...(open && {
-            '&:before': {
+            "&:before": {
               zIndex: 1,
               content: "''",
-              width: '100%',
-              height: '100%',
-              borderRadius: '50%',
-              position: 'absolute',
+              width: "100%",
+              height: "100%",
+              borderRadius: "50%",
+              position: "absolute",
               bgcolor: (theme) => alpha(theme.palette.grey[900], 0.8),
             },
           }),
@@ -87,22 +99,26 @@ export default function AccountPopover() {
           p: 0,
           mt: 1.5,
           ml: 0.75,
-          '& .MuiMenuItem-root': {
-            typography: 'body2',
+          "& .MuiMenuItem-root": {
+            typography: "body2",
             borderRadius: 0.75,
           },
         }}
       >
         <Box sx={{ my: 1.5, px: 2.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {account.displayName}
+            {userData.first_name.charAt(0).toUpperCase() +
+              userData.first_name.slice(1) +
+              " " +
+              userData.last_name.charAt(0).toUpperCase() +
+              userData.last_name.slice(1)}
           </Typography>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {account.email}
+          <Typography variant="body2" sx={{ color: "text.secondary" }} noWrap>
+            {userData.email}
           </Typography>
         </Box>
 
-        <Divider sx={{ borderStyle: 'dashed' }} />
+        <Divider sx={{ borderStyle: "dashed" }} />
 
         {/* <Stack sx={{ p: 1 }}>
           {MENU_OPTIONS.map((option) => (
@@ -112,9 +128,14 @@ export default function AccountPopover() {
           ))}
         </Stack> */}
 
-        <Divider sx={{ borderStyle: 'dashed' }} />
+        <Divider sx={{ borderStyle: "dashed" }} />
 
-        <MenuItem onClick={() => {}} sx={{ m: 1 }}>
+        <MenuItem
+          onClick={() => {
+            logOut();
+          }}
+          sx={{ m: 1 }}
+        >
           Logout
         </MenuItem>
       </MenuPopover>

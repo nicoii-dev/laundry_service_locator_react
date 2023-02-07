@@ -1,9 +1,12 @@
-import React from 'react'
+import React from "react";
+import Page from "../../components/Page";
 
 function LabanderoDashboardPage() {
   return (
-    <div>LabanderoDashboardPage</div>
-  )
+    <Page>
+      <div>LabanderoDashboardPage</div>
+    </Page>
+  );
 }
 
-export default LabanderoDashboardPage
+export default LabanderoDashboardPage;

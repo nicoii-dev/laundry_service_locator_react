@@ -28,7 +28,7 @@ const DialogModal = ({
 }) => (
   <Dialog
     open={open}
-    onClose={handleClose}
+    onClose={handleClose ? handleClose : () => {}}
     aria-labelledby="alert-dialog-title"
     aria-describedby="alert-dialog-description"
     fullWidth
