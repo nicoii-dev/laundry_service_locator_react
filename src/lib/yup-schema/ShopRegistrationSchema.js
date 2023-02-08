@@ -2,11 +2,14 @@ import * as yup from 'yup';
 
 export const ShopRegistrationSchema = yup
   .object({
-    firstName: yup.string().required('First name is required').min(2, 'First name must be atleast 2 letters').matches(/^[A-Za-z\s]*$/, 'Letters only'),
-    lastName: yup.string().required('Last name is required').min(2, 'Last name must be atleast 2 letters').matches(/^[A-Za-z\s]*$/, 'Letters only'),
-    gender: yup.string().required('Gender is required'),
-    phoneNumber: yup.string().required('Phone number is required').matches(/^[0-9]+$/, 'Numbers only').min(11, 'Phone number must be 11 digits').matches(/^(09|\+639)\d{9}$/gm, 'Invalid phone number'),
-    shopName: yup.string().required('Shop name is required'),
-    location: yup.string().required('Location is required'),
+    shopName: yup.string().required('Shop name is required').min(2, 'Shop name must be atleast 2 letters'),
+    buildingNumber: yup.string(),
+    street: yup.string().required('Street is required'),
+    barangay: yup.string().required('Barangay name is required'),
+    formattedAddress: yup.string().required('Formatted address is required'),
+    // city: yup.string().required('City is required'),
+    // province: yup.string().required('Province is required'),
+    zipcode: yup.string().required('Zipcode is required'),
+    // location: yup.string().required('Location is required'),
   })
   .required();

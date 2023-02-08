@@ -7,15 +7,16 @@ import MainRoute from "./routes/MainRoute";
 import store from "./store";
 
 // css
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
+import "@reach/combobox/styles.css";
 
 function App() {
   return (
     <Provider store={store}>
-    <ThemeProvider>
-      <ToastContainer />
-      <MainRoute />
-    </ThemeProvider>
+      <ThemeProvider>
+        <ToastContainer />
+        <MainRoute />
+      </ThemeProvider>
     </Provider>
   );
 }

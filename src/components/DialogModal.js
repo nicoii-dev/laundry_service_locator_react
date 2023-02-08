@@ -1,14 +1,18 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
+import { removeAddress } from '../store/slice/AddressSlice';
 // material
 import { Button, Typography, Dialog, DialogContent, DialogTitle, DialogActions, Box } from '@mui/material';
 
 export const useDialog = () => {
+  const dispatch = useDispatch();
   const [open, setOpen] = React.useState(false);
   const openDialog = () => {
     setOpen(true);
   };
   const handleClose = () => {
     setOpen(false);
+    dispatch(removeAddress());
   };
   const props = {
     open,

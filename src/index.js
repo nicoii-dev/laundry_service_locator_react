@@ -1,4 +1,5 @@
 import "simplebar/dist/simplebar.css";
+import "@reach/combobox/styles.css";
 
 import React from "react";
 import ReactDOM from "react-dom/client";
@@ -14,8 +15,6 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retryDelay: (attemptIndex) => Math.min(1000 * 3 ** attemptIndex, 30000),
-      refetchOnmount: false,
-      refetchOnWindowFocus: false,
     },
   },
 });

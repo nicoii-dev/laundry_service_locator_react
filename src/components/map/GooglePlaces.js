@@ -1,59 +1,158 @@
-import React from "react";
-import { useFormik } from "formik";
-import { TextField } from "@mui/material";
+import { useState, useMemo, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
+import usePlacesAutocomplete, {
+  getGeocode,
+  getLatLng,
+} from "use-places-autocomplete";
+import { TextField, Autocomplete } from "@mui/material";
+import { transitions, positions, Provider as AlertProvider } from 'react-alert'
+import { setAddress } from "../../store/slice/AddressSlice";
 
-import Autocomplete, { usePlacesWidget } from "react-google-autocomplete";
+// optional configuration
+const options = {
+  // you can also just use 'bottom center'
+  position: positions.BOTTOM_CENTER,
+  timeout: 5000,
+  offset: '30px',
+  // you can also just use 'scale'
+  transition: transitions.SCALE
+}
 
 export default function GooglePlaces() {
-  const formik = useFormik({
-    initialValues: {
-      country: "",
-      countryAnother: "",
-    },
-    onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
-    },
+
+  const [currentLocation, setCurrentLocation] = useState([]);
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.watchPosition(function (position) {
+        setCurrentLocation({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
+      });
+    }
+  }, []);
+
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
+    libraries: ["places"],
   });
 
-  const { ref } = usePlacesWidget({
-    apiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
-    onPlaceSelected: (place) => {
-      formik.setFieldValue("country", place.formatted_address);
-    },
-  });
+  if (!isLoaded) return <div>Loading...</div>;
+  return <Map currentLocation={currentLocation} />;
+}
+
+function Map(_props) {
+  const dispatch = useDispatch();
+  const center = useMemo(() => ({ lat: 43.45, lng: -80.49 }), []);
+  const [selected, setSelected] = useState(null);
+
+  const onMapClick = async (e) => {
+    setSelected(e.latLng)
+    const results = await getGeocode( {latLng: e.latLng} )
+    const { lat, lng } = await getLatLng(results[0]);
+    const payload  = {
+      street: results[0].address_components[0].long_name,
+      barangay: '',
+      formattedAddress: results[0].formatted_address,
+      zipcode: '',
+      location: {
+          lat: lat,
+          lng: lng
+      },
+    }
+    await dispatch(setAddress(payload))
+  };
+
+  return (
+    <>
+      <div className="places-container">
+        <PlacesAutocomplete setSelected={setSelected} />
+      </div>
+      {_props.currentLocation ? 
+      <GoogleMap
+        mapContainerStyle={{ width: "100%", height: "500px", marginTop: 5 }}
+        zoom={15}
+        center={selected ? selected : _props.currentLocation}
+        mapContainerClassName="map-container"
+        onClick={onMapClick}
+        onLoad={map => {
+            const bounds = new window.google.maps.LatLngBounds();
+            map.fitBounds(bounds);
+          }}
+      >
+        {selected && <Marker position={selected} />}
+      </GoogleMap>
+      : <></>}
+    </>
+  );
+}
+
+const PlacesAutocomplete = ({ setSelected }) => {
+  const dispatch = useDispatch();
+  const {
+    ready,
+    value,
+    setValue,
+    suggestions: { status, data },
+    clearSuggestions,
+  } = usePlacesAutocomplete();
+
+  const handleSelect = async (address) => {
+    setValue(address, false);
+    clearSuggestions();
+
+    try {
+      const results = await getGeocode({ address });
+      console.log(results[0])
+      const { lat, lng } = await getLatLng(results[0]);
+
+      const payload  = {
+        street: '',
+        barangay: '',
+        formattedAddress: results[0].formatted_address,
+        zipcode: '',
+        location: {
+            lat: lat,
+            lng: lng
+        },
+      }
+      await dispatch(setAddress(payload))
+
+      setSelected({ lat, lng });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div>
-      Formik state: {JSON.stringify(formik.values)}
-      <form
-        onSubmit={formik.handleSubmit}
-        style={{ display: "flex", flexDirection: "row" }}
-      >
-        <TextField
-          fullWidth
-          style={{ width: "250px", marginRight: "20px" }}
-          color="secondary"
-          variant="outlined"
-          inputRef={ref}
-          id="country"
-          name="country"
-          placeholder="Country"
-          onChange={formik.handleChange}
-          value={formik.values.country}
-        />
-        <Autocomplete
-          style={{ width: "250px" }}
-          id="countryAnother"
-          placeholder="countryAnother"
-          value={formik.values.countryAnother}
-          apiKey={process.env.REACT_APP_GOOGLE}
-          onPlaceSelected={(place) =>
-            formik.setFieldValue("countryAnother", place.formatted_address)
-          }
-          onChange={formik.handleChange}
-        />
-        <button type="submit">Submit</button>
-      </form>
+      <Autocomplete
+        disablePortal
+        id="combo-box-demo"
+        options={
+          status === "OK" && data.length > 0
+            ? data?.map((option) => option?.description)
+            : []
+        }
+        sx={{ width: '100%' }}
+        // onSelect={(e) => {
+        //   handleSelect(e.target.value);
+        // }}
+        onChange={(e) => {
+          handleSelect(e.target.innerText);
+        }}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label="Search places"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            disabled={!ready}
+            // placeholder="Search an address"
+          />
+        )}
+      />
     </div>
   );
-}
+};

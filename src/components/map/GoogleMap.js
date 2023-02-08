@@ -1,23 +1,28 @@
-import React, { Component } from "react";
+import React, { Component, useEffect, useState } from "react";
 import { Map, Marker, GoogleApiWrapper } from "google-maps-react";
 
-function CustomMap({ google, locations = [] }) {
+function CustomMap({ google, locations = [], currentLocation }) {
+
+  const handleClick = (e) => {
+    console.log(e)
+  }
   return (
     <Map
       google={google}
       containerStyle={{
-        position: "static",
-        width: "100%",
-        height: "100%",
+        width: "80%",
+        height: "500px",
       }}
       style={{
-        width: "100%",
-        height: "100%",
+        width: "80%",
+        height: "500px",
+        marginBottom: 20
       }}
-      center={locations[0]}
-      initialCenter={locations[0]}
+      center={currentLocation}
+      initialCenter={currentLocation}
       zoom={locations.length === 1 ? 18 : 13}
       disableDefaultUI={true}
+      onClick={(e) => {handleClick(e)}}
     >
       {/* {locations.map((coords) => (
         <Marker position={coords} />
@@ -26,12 +31,11 @@ function CustomMap({ google, locations = [] }) {
         title={"The marker`s title will appear as a tooltip."}
         name={"SOMA"}
         position={{ lat: 37.778519, lng: -122.40564 }}
-        
       />
     </Map>
   );
 }
 
 export default GoogleApiWrapper({
-  apiKey: "AIzaSyBo6TendQ3OkRcY6nEO_0Xdv7FRzIRjUdE",
+  apiKey: "AIzaSyAiXLrHWAccNRwxLS_2dMRyDRM6ti-_l5A",
 })(CustomMap);

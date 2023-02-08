@@ -25,10 +25,10 @@ import AboutPage from "../pages/User/AboutPage";
 import LabanderoDashboardPage from "../pages/Labandero/LabanderoDashboardPage";
 import LabanderoProfilePage from "../pages/Labandero/LabanderoProfilePage";
 // shop
-import ShopDashboardPage from "../pages/Shop/ShopDashboardPage";
-import ServicesPage from "../pages/Shop/ServicesPage";
+import ShopDashboardPage from "../pages/LaundryShop/Shop/ShopDashboardPage";
+import ServicesPage from "../pages/LaundryShop/ServicesPage";
 import EmailVerification from "../pages/EmailVerification";
-import ShopProfilePage from "../pages/Shop/ShopProfilePage";
+import ShopProfilePage from "../pages/LaundryShop/ShopProfilePage";
 
 // ----------------------------------------------------------------------
 
