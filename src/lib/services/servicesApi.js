@@ -6,7 +6,7 @@ export default {
   getShopServices: (id) => apiService.post(`/services/shop/${id}`),
   createServices: (payload) => apiService.post(`/services/create`, payload),
   viewServices: (id) => apiService.get(`/services/view/${id}`),
-  updateServices: (id, payload) => apiService.put(`/services/update/${id}`, payload),
+  updateServices: (id, payload) => apiService.post(`/services/update/${id}`, payload),
   deleteServices: (id) => apiService.post(`/services/delete/${id}`),
 
   //   verifyEmail: (token, payload) => {

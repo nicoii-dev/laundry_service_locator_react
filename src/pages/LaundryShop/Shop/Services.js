@@ -2,8 +2,7 @@ import * as React from "react";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
-import Avatar from "@mui/material/Avatar";
+import { useDispatch } from "react-redux";
 import {
   Typography,
   Card,
@@ -14,34 +13,69 @@ import {
   Stack,
   Tooltip,
   Grid,
+  IconButton,
 } from "@mui/material";
 import _ from "lodash";
-import { useQuery } from "react-query";
-import { useNavigate } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "react-query";
+import Swal from "sweetalert2";
+import { toast } from "react-toastify";
 import Scrollbar from "../../../components/Scrollbar";
 import Iconify from "../../../components/Iconify";
 import DialogModal, { useDialog } from "../../../components/DialogModal";
 import ServicesForm from "../../../components/pages/shop/services/ServicesForm";
 // api
 import servicesApi from "../../../lib/services/servicesApi";
+// reducer
+import { setService } from "../../../store/slice/ServiceSlice";
 
 function Services(_props) {
-  console.log(_props);
-  const navigate = useNavigate();
   const [open, openDialog, dialogProps, setOpen, handleClose] = useDialog();
-  const { getShopServices } = servicesApi;
+  const { getShopServices, deleteServices } = servicesApi;
+  const dispatch = useDispatch();
+  const queryClient = useQueryClient();
   const {
     data: servicesData,
     status: servicesStatus,
     isFetching: servicesIsFetching,
   } = useQuery(
-    ["get-all-shop-services"],
+    ["get-all-shop-services", _props?.shopData?.id],
     () => getShopServices(_props?.shopData?.id),
     {
       retry: 3, // Will retry failed requests 10 times before displaying an error
     }
   );
-    console.log(servicesData)
+
+  const { mutate: DeleteService, isLoading: isLoad } = useMutation((id) => deleteServices(id), {
+    onSuccess: (data) => {
+      queryClient.invalidateQueries(['get-all-shop-services']);
+      toast.success('Deleted successfully.');
+    },
+    onError: (error) => {
+      toast.error(error.response.data.message);
+    },
+  });
+
+  const onDeleteHandler = (id) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        DeleteService(id)
+        // Swal.fire(
+        //   'Deleted!',
+        //   'Your file has been deleted.',
+        //   'success'
+        // )
+      }
+    })
+  }
+
   return (
     <Card style={{ height: 485, overflow: "auto" }}>
       <CardContent>
@@ -57,7 +91,20 @@ function Services(_props) {
           Services created will be listed here
         </Typography>
       </CardContent>
-
+      <Tooltip title={`Add service`}>
+        <Button
+          style={{ position: "absolute", right: 20, top: 20 }}
+          onClick={() => {
+            openDialog();
+          }}
+        >
+          <Iconify
+            icon="material-symbols:add-box-outline"
+            width={30}
+            height={30}
+          />
+        </Button>
+      </Tooltip>
       <List dense>
         <Scrollbar>
           {_.isNull(servicesData?.data) ||
@@ -78,13 +125,15 @@ function Services(_props) {
                   style={{ width: "80%", height: 150, textAlign: "center" }}
                   variant="outlined"
                 >
-                  <Typography style={{ padding: 15, marginTop: 15, fontSize: 14 }}>
+                  <Typography
+                    style={{ padding: 15, marginTop: 15, fontSize: 14 }}
+                  >
                     You don't have any laundry services yet.
                   </Typography>
                   <Button
                     variant="outlined"
                     onClick={() => {
-                      openDialog()
+                      openDialog();
                     }}
                   >
                     Add Service
@@ -94,36 +143,55 @@ function Services(_props) {
             </Box>
           ) : (
             servicesData.data?.map((data, index) => (
-              <Tooltip key={index} title={`Manage ${data.name}`}>
-                <ListItem>
-                  <ListItemButton sx={{}}>
-                    <ListItemAvatar>
-                      {/* <Avatar alt={`Avatar n°${data + 1}`} sx={{ backgroundColor: data.color }}>
-                        <Typography>{data?.name?.charAt(0).toUpperCase()}</Typography>
-                      </Avatar> */}
-                    </ListItemAvatar>
-                    <Grid
-                      container
-                      justifyContent="space-between"
-                      direction="row"
-                      spacing={1}
-                    >
-                      <Grid>
-                        <Stack>
-                          <Typography variant="subtitle1" sx={{ fontSize: 20 }}>
-                            {data.service_name || 'Service name'}
-                          </Typography>
-                          <Stack direction="row" spacing={1}>
-                            <Typography variant="caption" sx={{ fontSize: 16 }}>
-                              Price: ₱{data.users_count || "0.00"}
+              <ListItem>
+                <ListItemButton sx={{}}>
+                  <Grid
+                    container
+                    justifyContent="space-between"
+                    direction="row"
+                    spacing={1}
+                  >
+                    <Grid>
+                      <Stack>
+                        <Stack direction="row" spacing={1}>
+                          <IconButton onClick={() =>{onDeleteHandler(data.id)}}>
+                            <Iconify
+                              icon="material-symbols:delete-outline-rounded"
+                              width={30}
+                              height={30}
+                              color="#FF3333"
+                            />
+                          </IconButton>
+                          <Tooltip
+                            key={index}
+                            title={`Manage service`}
+                            onClick={() => {
+                              openDialog();
+                              dispatch(setService(data));
+                            }}
+                          >
+                            <Typography
+                              variant="subtitle1"
+                              sx={{ fontSize: 16 }}
+                            >
+                              {data.service_name || "Service name"}
                             </Typography>
-                          </Stack>
+                            
+                          </Tooltip>
                         </Stack>
-                      </Grid>
+                        <Stack direction="row" spacing={1}>
+                          <Typography
+                            variant="caption"
+                            sx={{ fontSize: 14, marginLeft: 7, marginTop: -3 }}
+                          >
+                            Price: ₱{data.price || "0.00"}
+                          </Typography>
+                        </Stack>
+                      </Stack>
                     </Grid>
-                  </ListItemButton>
-                </ListItem>
-              </Tooltip>
+                  </Grid>
+                </ListItemButton>
+              </ListItem>
             ))
           )}
         </Scrollbar>
@@ -139,7 +207,7 @@ function Services(_props) {
         }}
         width="xs"
       >
-        <ServicesForm />
+        <ServicesForm handleClose={handleClose} />
       </DialogModal>
     </Card>
   );

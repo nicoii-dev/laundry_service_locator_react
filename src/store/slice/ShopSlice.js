@@ -1,17 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  shopAddress: {
-    street: '',
-    barangay: '',
-    city: '',
-    province: '',
-    zipcode: '',
-    location: {
-        lat: '',
-        lng: ''
-    },
-  },
+  shop: []
 };
 
 const ShopSlice = createSlice({
@@ -20,11 +10,11 @@ const ShopSlice = createSlice({
   reducers: {
     setShop: (state, action) => ({
       ...state,
-      shopAddress: action.payload,
+      shop: action.payload,
     }),
     removeShop: (state, action) => ({
       ...state,
-      shopAddress: {},
+      shop: {},
     }),
   },
 });

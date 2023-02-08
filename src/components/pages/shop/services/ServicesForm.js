@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "react-query";
 import { useSelector } from "react-redux";
+import _ from "lodash";
 // form
 import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
@@ -11,49 +12,54 @@ import { Stack, IconButton, InputAdornment, Button } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 // components
 import { FormProvider, RHFTextField } from "../../../../components/hook-form";
-import { ShopRegistrationSchema } from "../../../../lib/yup-schema/ShopRegistrationSchema";
+import { ServiceSchema } from "../../../../lib/yup-schema/serviceSchema";
 // api
 import servicesApi from "../../../../lib/services/servicesApi";
 // ----------------------------------------------------------------------
 
+const servicesList = [
+  { value: "Pickup laundry services", label: "Pickup laundry services" },
+  {
+    value: "Commercial laundry services",
+    label: "Commercial laundry services",
+  },
+  { value: "Dry cleaning services", label: "Dry cleaning services" },
+  {
+    value: "Fluff and fold laundry services",
+    label: "Fluff and fold laundry services",
+  },
+  { value: "Laundromat self-service", label: "Laundromat self-service" },
+];
+
 export default function ServicesForm(_props) {
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { shop } = useSelector((store) => store.shop);
+  const { service } = useSelector((store) => store.service);
   const { createServices, viewServices, updateServices, deleteServices } =
     servicesApi;
-  const { address } = useSelector((store) => store.address);
-  console.log(address);
 
   const defaultValues = {
-    shopName: "",
-    buildingNumber: "",
-    street: "",
-    barangay: "",
-    formattedAddress: "",
-    zipcode: "",
-    lat: "",
-    lng: "",
+    serviceName: "Pickup laundry services",
+    price: "",
   };
 
   const methods = useForm({
-    resolver: yupResolver(ShopRegistrationSchema),
+    resolver: yupResolver(ServiceSchema),
     defaultValues,
   });
 
   const {
     handleSubmit,
     formState: { isSubmitting },
-    setValue,
+    setValue
   } = methods;
 
   useEffect(() => {
-    setValue("street", address?.street);
-    setValue("formattedAddress", address?.formattedAddress);
-    setValue("lat", address?.location?.lat);
-    setValue("lng", address?.location?.lng);
-  }, [address, setValue]);
+    setValue('serviceName', _.isEmpty(service) ? "Pickup laundry services" : service?.service_name)
+    setValue('price', _.isEmpty(service) ? "" : parseInt(service?.price))
+  },[service, setValue])
 
-  const { mutate: create, isLoading: createShopLoading } = useMutation(
+  const { mutate: create, isLoading: createServiceLoading } = useMutation(
     (payload) => createServices(payload),
     {
       onSuccess: (data) => {
@@ -67,29 +73,48 @@ export default function ServicesForm(_props) {
     }
   );
 
+  const { mutate: update, isLoading: updateServiceLoading } = useMutation(
+    (payload) => updateServices(service?.id, payload),
+    {
+      onSuccess: (data) => {
+        queryClient.invalidateQueries(["get-all-shop-services"]);
+        toast.success("Laundry Service successfully updated.");
+        _props.handleClose();
+      },
+      onError: (error) => {
+        toast.error(error.response.data.message);
+      },
+    }
+  );
+
   const onSubmit = async (data) => {
     const payload = {
-      shop_name: data.shopName,
-      building_number: data.buildingNumber,
-      street: data.street,
-      barangay: data.barangay,
-      zipcode: data.zipcode,
-      formatted_address: address.formattedAddress,
-      // city: "",
-      // province: "",
-      location: JSON.stringify({
-        lat: address.location.lat,
-        lng: address.location.lng,
-      }),
+      shop_id: shop.id,
+      service_name: data.serviceName,
+      price: data.price,
     };
     create(payload);
   };
 
+  const onUpdate = async (data) => {
+    const payload = {
+      shop_id: shop.id,
+      service_name: data.serviceName,
+      price: data.price,
+    };
+    update(payload);
+  };
+
   return (
-    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-      <Stack spacing={2}>
-        <RHFTextField name="service_nm" label="Building number" />
-        <RHFTextField name="street" label="Street" />
+    <FormProvider methods={methods} onSubmit={handleSubmit(_.isEmpty(service) ? onSubmit : onUpdate)}>
+      <Stack spacing={2} sx={{ mt: 2 }}>
+        <RHFTextField
+          name="serviceName"
+          label="Service"
+          inputType="dropDown"
+          dropDownData={servicesList}
+        />
+        <RHFTextField name="price" label="Price (₱)" />
 
         <Stack
           direction={{ xs: "column", sm: "row" }}
@@ -116,10 +141,10 @@ export default function ServicesForm(_props) {
             size="large"
             type="submit"
             variant="contained"
-            loading={createShopLoading}
+            loading={_.isEmpty(service) ? createServiceLoading : updateServiceLoading}
             sx={{ marginRight: 2 }}
           >
-            Create
+            {!_.isEmpty(service) ? 'Update' : 'Create' }
           </LoadingButton>
         </Stack>
       </Stack>

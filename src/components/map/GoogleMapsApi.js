@@ -20,24 +20,16 @@ function GoogleMapsApi(_props) {
     <GoogleMap
       mapContainerStyle={{ width: "100%", height: "500px", marginTop: 5 }}
       zoom={15}
-      center={
-        _props.coordinates !== undefined
-          ? _props.coordinates
-          : _props.currentLocation
-      }
+      center={_props.coordinates}
       mapContainerClassName="map-container"
       // onLoad={(map) => {
       //   const bounds = new window.google.maps.LatLngBounds();
       //   map.fitBounds(bounds);
       // }}
     >
-      {_props.currentLocation && (
+      {_props.coordinates && (
         <MarkerF
-          position={
-            _props.coordinates !== undefined
-              ? _props.coordinates
-              : _props.currentLocation
-          }
+          position={_props.coordinates}
           icon={
             <Iconify icon="eva:menu-2-fill" />
             // <img
