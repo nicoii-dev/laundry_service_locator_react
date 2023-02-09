@@ -93,8 +93,16 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
         backgroundColor: "white",
       }}
     >
-      <Box sx={{ px: 2.5, py: 3, display: "inline-flex" }}>
-        <Logo />
+      <Box sx={{ px: 2.5, py: 3, justifyContent: 'center', alignItems: 'center'}}>
+        {/* <img
+          alt="register"
+          src="/static/laundry-shop.png"
+          style={{
+            height: 50,
+            width: 50,
+            marginBottom: 10,
+          }}
+        /> */}
       </Box>
 
       <Box sx={{ mb: 5, mx: 2.5 }}>
@@ -115,8 +123,7 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
                   userData.last_name.slice(1)}
               </Typography>
               <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                {userData.role.charAt(0).toUpperCase() +
-                  userData.role.slice(1)}
+                {userData.role.charAt(0).toUpperCase() + userData.role.slice(1)}
               </Typography>
             </Box>
           </AccountStyle>

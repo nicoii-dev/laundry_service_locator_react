@@ -6,15 +6,8 @@ export default {
   getUserShops: (id) => apiService.post(`/shops/user/${id}`),
   createShop: (payload) => apiService.post(`/shops/create`, payload),
   viewShop: (id) => apiService.get(`/shops/view/${id}`),
-  updateShop: (id, payload) => apiService.put(`/shops/update/${id}`, payload),
+  updateShop: (id, payload) => apiService.post(`/shops/update/${id}`, payload),
   deleteShop: (id) => apiService.post(`/shops/delete/${id}`),
 
-  //   verifyEmail: (token, payload) => {
-  //     apiService.post(`/auth/verify-email`, payload, {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-  //   },
+  searchShops: (payload) => apiService.post(`/search`, payload),
 };

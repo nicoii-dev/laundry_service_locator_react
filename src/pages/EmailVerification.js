@@ -50,7 +50,7 @@ export default function EmailVerification() {
         });
         setTimeout(() => {
           navigate("/login");
-          toast.success('Email verified');
+          // toast.success('Email verified');
         }, 3000);
       } catch (e) {
         console.log(e);

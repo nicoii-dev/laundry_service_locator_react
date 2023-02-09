@@ -1,10 +1,11 @@
 import { useState, useMemo, useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
+import { useDispatch, useSelector } from "react-redux";
+import { GoogleMap, useJsApiLoader, MarkerF } from "@react-google-maps/api";
 import usePlacesAutocomplete, {
   getGeocode,
   getLatLng,
 } from "use-places-autocomplete";
+import _ from "lodash";
 import { TextField, Autocomplete } from "@mui/material";
 import { transitions, positions, Provider as AlertProvider } from 'react-alert'
 import { setAddress } from "../../store/slice/AddressSlice";
@@ -20,8 +21,9 @@ const options = {
 }
 
 export default function GooglePlaces() {
-
+  const { shop } = useSelector((store) => store.shop);
   const [currentLocation, setCurrentLocation] = useState([]);
+  const [ libraries ] = useState(['places']);
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.watchPosition(function (position) {
@@ -33,18 +35,18 @@ export default function GooglePlaces() {
     }
   }, []);
 
-  const { isLoaded } = useLoadScript({
+  const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
-    libraries: ["places"],
+    libraries,
   });
 
   if (!isLoaded) return <div>Loading...</div>;
-  return <Map currentLocation={currentLocation} />;
+  return <Map currentLocation={!_.isEmpty(shop) ? JSON.parse(shop.location) : currentLocation } />;
 }
 
 function Map(_props) {
   const dispatch = useDispatch();
-  const center = useMemo(() => ({ lat: 43.45, lng: -80.49 }), []);
+  const { shop } = useSelector((store) => store.shop);
   const [selected, setSelected] = useState(null);
 
   const onMapClick = async (e) => {
@@ -73,7 +75,7 @@ function Map(_props) {
       <GoogleMap
         mapContainerStyle={{ width: "100%", height: "500px", marginTop: 5 }}
         zoom={15}
-        center={selected ? selected : _props.currentLocation}
+        center={!_.isEmpty(selected) || !_.isNull(selected) ? selected : _props.currentLocation}
         mapContainerClassName="map-container"
         onClick={onMapClick}
         onLoad={map => {
@@ -81,7 +83,7 @@ function Map(_props) {
             map.fitBounds(bounds);
           }}
       >
-        {selected && <Marker position={selected} />}
+        { (selected || shop) && <MarkerF position={!_.isEmpty(selected) || !_.isNull(selected) ? selected : _props.currentLocation} />}
       </GoogleMap>
       : <></>}
     </>

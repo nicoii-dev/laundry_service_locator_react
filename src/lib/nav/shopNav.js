@@ -16,21 +16,21 @@ const shopNav = [
     path: '/home',
     icon: getIcon('material-symbols:home-pin'),
   },
-  {
-    title: 'About',
-    path: '/about',
-    icon: getIcon('mdi:about-circle-outline'),
-  },
-  {
-    title: 'Services',
-    path: '/services',
-    icon: getIcon('material-symbols:laundry-outline-rounded'),
-  },
-  {
-    title: 'Profile',
-    path: '/profile',
-    icon: getIcon('carbon:user-profile'),
-  },
+  // {
+  //   title: 'About',
+  //   path: '/about',
+  //   icon: getIcon('mdi:about-circle-outline'),
+  // },
+  // {
+  //   title: 'Services',
+  //   path: '/services',
+  //   icon: getIcon('material-symbols:laundry-outline-rounded'),
+  // },
+  // {
+  //   title: 'Profile',
+  //   path: '/profile',
+  //   icon: getIcon('carbon:user-profile'),
+  // },
 ];
 
 export default shopNav;

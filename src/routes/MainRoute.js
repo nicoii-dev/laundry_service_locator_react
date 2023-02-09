@@ -97,8 +97,8 @@ export default function MainRoute() {
           <Route path="shops" element={<ShopDashboardPage />} />
           <Route path="home" element={<HomePage />} />
           <Route path="about" element={<AboutPage />} />
-          <Route path="services" element={<ServicesPage />} />
-          <Route path="profile" element={<ShopProfilePage />} />
+          {/* <Route path="services" element={<ServicesPage />} />
+          <Route path="profile" element={<ShopProfilePage />} /> */}
           <Route
             path="*"
             element={<Navigate to="404" state={{ from: location }} replace />}

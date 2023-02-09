@@ -18,7 +18,7 @@ import { useDialog } from "../../DialogModal";
 
 // ----------------------------------------------------------------------
 
-export default function ShopForm(_props) {
+export default function ProfileForm(_props) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const {

@@ -11,11 +11,11 @@ const userNav = [
     path: '/home',
     icon: getIcon('material-symbols:home-pin'),
   },
-  {
-    title: 'About',
-    path: '/about',
-    icon: getIcon('mdi:about-circle-outline'),
-  },
+  // {
+  //   title: 'About',
+  //   path: '/about',
+  //   icon: getIcon('mdi:about-circle-outline'),
+  // },
 ];
 
 export default userNav;

@@ -37,5 +37,5 @@ function CustomMap({ google, locations = [], currentLocation }) {
 }
 
 export default GoogleApiWrapper({
-  apiKey: "AIzaSyAiXLrHWAccNRwxLS_2dMRyDRM6ti-_l5A",
+  apiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
 })(CustomMap);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useQuery } from "react-query";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Page from "../../../components/Page";
 import { Container, Typography, Grid, Box, Button } from "@mui/material";
 import AppWidgetSummary from "../../../components/sections/@dashboard/app/AppWidgetSummary";
@@ -18,6 +18,7 @@ const colors = ["primary", "secondary", "info", "success", "warning"];
 function ShopDashboardPage() {
   const dispatch = useDispatch();
   const [open, openDialog, dialogProps, setOpen, handleClose] = useDialog();
+  const { shop } = useSelector((store) => store.shop);
   const { getUserShops } = shopApi;
   const userData = getLocalStorageItem("userData");
   const [selectedShop, setSelectedShop] = useState("");
@@ -29,14 +30,11 @@ function ShopDashboardPage() {
   } = useQuery(["get-all-user-shops"], () => getUserShops(userData.id), {
     retry: 3, // Will retry failed requests 10 times before displaying an error
   });
-
-  console.log(selectedShop);
-
   return (
     <Page title="Shops">
       <Container maxWidth="xl">
         <Typography variant="h4" sx={{ mb: 5 }}>
-          Hi, Welcome back
+          Hi, {userData.first_name.charAt(0).toUpperCase() + userData.first_name.slice(1)}
         </Typography>
 
         <Box
@@ -55,7 +53,7 @@ function ShopDashboardPage() {
             sx={{ float: "right" }}
           >
             <Iconify
-              icon="material-symbols:add-box-outline"
+              icon="mdi:shop-plus"
               width={20}
               height={20}
               sx={{ mr: 1 }}
@@ -73,7 +71,6 @@ function ShopDashboardPage() {
                 sm={6}
                 md={2.3}
                 key={index}
-                sx={{ cursor: "pointer" }}
               >
                 <AppWidgetSummary
                   title={
@@ -83,22 +80,23 @@ function ShopDashboardPage() {
                   total={714000}
                   icon={"ant-design:android-filled"}
                   color={colors[index]}
-                  onClick={() => {
-                    dispatch(setShop(data));
-                    setSelectedShop(data);
-                  }}
+                  data={data}
+                  // onClick={() => {
+                  //   dispatch(setShop(data));
+                  //   setSelectedShop(data);
+                  // }}
                 />
               </Grid>
             );
           })}
         </Grid>
-        {selectedShop.shop_name !== undefined ? (
+        {shop.shop_name !== undefined ? (
           <Grid container sx={{ mt: 5 }} spacing={2}>
             <Grid item xs={12} md={6} lg={3}>
-              <Services shopData={selectedShop} />
+              <Services  />
             </Grid>
             <Grid item xs={12} md={6} lg={9}>
-              <GoogleMapsApi coordinates={JSON.parse(selectedShop?.location)} />
+              <GoogleMapsApi coordinates={JSON.parse(shop?.location)} />
             </Grid>
           </Grid>
         ) : (

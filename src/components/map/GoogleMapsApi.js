@@ -19,7 +19,7 @@ function GoogleMapsApi(_props) {
   return isLoaded ? (
     <GoogleMap
       mapContainerStyle={{ width: "100%", height: "500px", marginTop: 5 }}
-      zoom={15}
+      zoom={12}
       center={_props.coordinates}
       mapContainerClassName="map-container"
       // onLoad={(map) => {

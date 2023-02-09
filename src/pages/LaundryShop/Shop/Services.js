@@ -2,7 +2,7 @@ import * as React from "react";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Typography,
   Card,
@@ -30,16 +30,18 @@ import { setService } from "../../../store/slice/ServiceSlice";
 
 function Services(_props) {
   const [open, openDialog, dialogProps, setOpen, handleClose] = useDialog();
+  const { shop } = useSelector((store) => store.shop);
   const { getShopServices, deleteServices } = servicesApi;
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
   const {
     data: servicesData,
     status: servicesStatus,
+    isLoading: servicesIsLoading,
     isFetching: servicesIsFetching,
   } = useQuery(
-    ["get-all-shop-services", _props?.shopData?.id],
-    () => getShopServices(_props?.shopData?.id),
+    ["get-all-shop-services", shop?.id],
+    () => getShopServices(shop?.id),
     {
       retry: 3, // Will retry failed requests 10 times before displaying an error
     }
@@ -81,9 +83,9 @@ function Services(_props) {
       <CardContent>
         <Typography variant="h6">
           {`${
-            _props?.shopData?.shop_name
-              ? _props?.shopData?.shop_name?.charAt(0).toUpperCase() +
-                _props?.shopData?.shop_name?.slice(1)
+            shop?.shop_name
+              ? shop?.shop_name?.charAt(0).toUpperCase() +
+                shop?.shop_name?.slice(1)
               : ""
           } Services List`}
         </Typography>
@@ -118,7 +120,7 @@ function Services(_props) {
                 justifyContent: "center",
               }}
             >
-              {_props.loading ? (
+              {servicesIsLoading ? (
                 <CircularProgress />
               ) : (
                 <Card
