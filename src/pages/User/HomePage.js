@@ -13,6 +13,7 @@ import {
   InputLabel,
   OutlinedInput,
   InputAdornment,
+  Stack,
 } from "@mui/material";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { useDispatch } from "react-redux";
@@ -21,15 +22,19 @@ import { toast } from "react-toastify";
 import Page from "../../components/Page";
 import Iconify from "../../components/Iconify";
 import GooglePlaces2 from "../../components/map/GooglePlaces2";
-// redux
-import { setAllShop } from "../../store/slice/AllShopsSlice";
-// api
-import shopApi from "../../lib/services/shopApi";
 import { LoadingButton } from "@mui/lab";
 import servicesList from "../../lib/json-data/service.json";
+// redux
+import { setAllShop } from "../../store/slice/AllShopsSlice";
+import { setInclude, setAllLabandero } from "../../store/slice/LabanderoSlice";
+// api
+import shopApi from "../../lib/services/shopApi";
+import labanderoApi from "../../lib/services/labanderoApi";
+
 
 function HomePage() {
-  const { getAllShops, searchShops } = shopApi;
+  const { getAllServices, searchShops, } = shopApi;
+  const { getAllLabandero } = labanderoApi;
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
   const [serviceChecked, setServiceChecked] = useState(false);
@@ -45,15 +50,29 @@ function HomePage() {
     data: shopsData,
     status: shopsStatus,
     isFetching: shopsIsFetching,
-  } = useQuery(["get-all-shops"], () => getAllShops(), {
+  } = useQuery(["get-all-search-services"], () => getAllServices(), {
     retry: 3, // Will retry failed requests 10 times before displaying an error
   });
 
   useEffect(() => {
     if (shopsStatus === "success") {
-      dispatch(setAllShop(shopsData?.data));
+      dispatch(setAllShop(shopsData?.data.services));
     }
   }, [dispatch, shopsData, shopsStatus, shopsIsFetching]);
+
+  const {
+    data: labanderoData,
+    status: labanderoStatus,
+    isFetching: labanderoIsFetching,
+  } = useQuery(["get-all-labandero"], () => getAllLabandero(), {
+    retry: 3, // Will retry failed requests 10 times before displaying an error
+  });
+
+  useEffect(() => {
+    if (labanderoStatus === "success") {
+      dispatch(setAllLabandero(labanderoData?.data.labandero));
+    }
+  }, [dispatch, labanderoData?.data.labandero, labanderoStatus])
 
   const { mutate: Search, isLoading: searchLoading } = useMutation(
     (payload) => searchShops(payload),
@@ -104,8 +123,8 @@ function HomePage() {
       }
       return;
     }
-    if(!serviceChecked && !priceChecked) {
-      toast.error("No search filter select.");
+    if (!serviceChecked && !priceChecked) {
+      toast.error("No search filter selected");
     }
   };
 
@@ -204,6 +223,21 @@ function HomePage() {
             />
             Search
           </LoadingButton>
+          <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={labanderoChecked}
+                  onChange={(e) => {
+                    setLabanderoChecked(e.target.checked);
+                    dispatch(setInclude(e.target.checked))
+                  }}
+                />
+              }
+              label={"Include Labandero/Labandera"}
+            />
+          </Stack>
+
           <GooglePlaces2 />
         </Box>
       </Container>

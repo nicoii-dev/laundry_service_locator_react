@@ -16,9 +16,9 @@ const adminNav = [
     icon: getIcon('ph:users-three-bold'),
   },
   {
-    title: 'Reports',
-    path: '/reports',
-    icon: getIcon('mdi:report-bar-stacked'),
+    title: 'Browse',
+    path: '/home',
+    icon: getIcon('material-symbols:home-pin'),
   },
 ];
 

@@ -20,9 +20,9 @@ const options = {
   transition: transitions.SCALE
 }
 
-export default function GooglePlaces() {
-  const { shop } = useSelector((store) => store.shop);
-  const [currentLocation, setCurrentLocation] = useState([{lat: 8.228021, lng: 124.245242 }]);
+export default function GooglePlacesProfile() {
+  const { profile } = useSelector((store) => store.profile);
+  const [currentLocation, setCurrentLocation] = useState([]);
   const [ libraries ] = useState(['places']);
   useEffect(() => {
     if (navigator.geolocation) {
@@ -41,12 +41,11 @@ export default function GooglePlaces() {
   });
 
   if (!isLoaded) return <div>Loading...</div>;
-  return <Map currentLocation={!_.isEmpty(shop) ? JSON.parse(shop.location) : currentLocation } />;
+  return <Map currentLocation={ !_.isEmpty(profile) ? JSON.parse(profile.location) : currentLocation } />;
 }
 
 function Map(_props) {
   const dispatch = useDispatch();
-  const { shop } = useSelector((store) => store.shop);
   const [selected, setSelected] = useState(null);
 
   const onMapClick = async (e) => {
@@ -65,7 +64,7 @@ function Map(_props) {
     }
     await dispatch(setAddress(payload))
   };
-
+  console.log(_props.currentLocation)
   return (
     <>
       <div className="places-container">
@@ -83,7 +82,7 @@ function Map(_props) {
             map.fitBounds(bounds);
           }}
       >
-        { (selected || shop) && <MarkerF position={!_.isEmpty(selected) || !_.isNull(selected) ? selected : _props.currentLocation} />}
+        {<MarkerF position={!_.isEmpty(selected) || !_.isNull(selected) ? selected : _props.currentLocation} />}
       </GoogleMap>
       : <></>}
     </>

@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 // material
 import { styled } from '@mui/material/styles';
@@ -6,6 +7,7 @@ import { styled } from '@mui/material/styles';
 import DashboardNavbar from './DashboardNavbar';
 import DashboardSidebar from './DashboardSidebar';
 import { getLocalStorageItem } from '../../../lib/util/getLocalStorage';
+import { setInclude } from '../../../store/slice/LabanderoSlice';
 
 // ----------------------------------------------------------------------
 
@@ -35,11 +37,12 @@ const MainStyle = styled('div')(({ theme }) => ({
 
 export default function DashboardLayout() {
   const [open, setOpen] = useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const tokenData = getLocalStorageItem('userToken')
-  // console.log(location)
-  // if(tokenData !== null)
+  const dispatch = useDispatch();
+  
+  useEffect(() => {
+    dispatch(setInclude(false))
+  })
+ 
   return (
     <RootStyle>
       <DashboardNavbar onOpenSidebar={() => setOpen(true)} />

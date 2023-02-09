@@ -39,7 +39,7 @@ const ContentStyle = styled("div")(({ theme }) => ({
 
 export default function EmailVerification() {
   const navigate = useNavigate();
-  const { email, token} = useParams();
+  const { email, token } = useParams();
   const { verifyEmail } = userApi;
 
   useEffect(() => {
@@ -49,8 +49,8 @@ export default function EmailVerification() {
           email: email,
         });
         setTimeout(() => {
+          toast.success("Email verified");
           navigate("/login");
-          // toast.success('Email verified');
         }, 3000);
       } catch (e) {
         console.log(e);

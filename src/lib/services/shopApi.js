@@ -10,4 +10,5 @@ export default {
   deleteShop: (id) => apiService.post(`/shops/delete/${id}`),
 
   searchShops: (payload) => apiService.post(`/search`, payload),
+  getAllServices: () => apiService.get(`/search/all`),
 };

@@ -25,7 +25,9 @@ import { setAddress } from "../../store/slice/AddressSlice";
 import DialogModal, { useDialog } from "../DialogModal";
 
 export default function GooglePlaces2() {
-  const [currentLocation, setCurrentLocation] = useState([]);
+  const [currentLocation, setCurrentLocation] = useState([
+    { lat: 8.228021, lng: 124.245242 },
+  ]);
   const [libraries] = useState(["places"]);
   useEffect(() => {
     if (navigator.geolocation) {
@@ -50,9 +52,9 @@ export default function GooglePlaces2() {
 function Map(_props) {
   const dispatch = useDispatch();
   const { allShops } = useSelector((store) => store.allShops);
+  const { include, allLabandero } = useSelector((store) => store.profile);
   const [selected, setSelected] = useState(null);
   const [open, openDialog, dialogProps, setOpen, handleClose] = useDialog();
-  const [infoWindowLoc, setInfoWindowLoc] = useState("");
 
   const onMapClick = async (e) => {
     setSelected(e.latLng);
@@ -71,10 +73,9 @@ function Map(_props) {
     await dispatch(setAddress(payload));
   };
   const onLoad = (infoWindow) => {
-    console.log("infoWindow: ", infoWindow);
+    // console.log("infoWindow: ", infoWindow);
   };
 
-  console.log(allShops);
   return (
     <>
       <div className="places-container">
@@ -135,8 +136,6 @@ function Map(_props) {
             !_.isEmpty(selected) || !_.isNull(selected)
               ? selected
               : _props.currentLocation
-              ? _props.currentLocation
-              : { lat: 8.231, lng: 124.240967 }
           }
           mapContainerClassName="map-container"
           onClick={onMapClick}
@@ -147,8 +146,20 @@ function Map(_props) {
         >
           {allShops.map((data, index) => {
             return (
-              <MarkerF key={index} position={JSON.parse(data.shop.location)}>
-                <InfoWindowF onLoad={onLoad} position={JSON.parse(data.shop.location)}>
+              <MarkerF
+                key={index}
+                position={JSON.parse(data.shop.location)}
+                icon={{
+                  url: "/static/laundry-shop2.png",
+                  scaledSize: new window.google.maps.Size(40, 40), // scaled size
+                  origin: new window.google.maps.Point(0, 0), // origin
+                  anchor: new window.google.maps.Point(0, 0), // anchor
+                }}
+              >
+                <InfoWindowF
+                  onLoad={onLoad}
+                  position={JSON.parse(data.shop.location)}
+                >
                   <div
                     style={{
                       background: `white`,
@@ -156,7 +167,10 @@ function Map(_props) {
                       padding: 10,
                     }}
                   >
-                    <h3>{data.shop.shop_name.charAt(0).toUpperCase() + data.shop.shop_name.slice(1)}</h3>
+                    <h3>
+                      {data.shop.shop_name.charAt(0).toUpperCase() +
+                        data.shop.shop_name.slice(1)}
+                    </h3>
                     <h4>{data.service_name}</h4>
                     <h4>{`₱${data.price}`}</h4>
                   </div>
@@ -164,6 +178,46 @@ function Map(_props) {
               </MarkerF>
             );
           })}
+          {include &&
+            allLabandero.map((data, index) => {
+              if (!_.isUndefined(data.profile) && !_.isNull(data.profile)) {
+                return (
+                  <MarkerF
+                    key={index}
+                    position={JSON.parse(data.profile.location)}
+                    icon={{
+                      url: "/static/staff.png",
+                      scaledSize: new window.google.maps.Size(40, 40), // scaled size
+                      origin: new window.google.maps.Point(0, 0), // origin
+                      anchor: new window.google.maps.Point(0, 0), // anchor
+                    }}
+                  >
+                    <InfoWindowF
+                      onLoad={onLoad}
+                      position={JSON.parse(data.profile.location)}
+                    >
+                      <div
+                        style={{
+                          background: `white`,
+                          border: `1px solid #ccc`,
+                          padding: 10,
+                        }}
+                      >
+                        <h3>
+                          {data.first_name.charAt(0).toUpperCase() +
+                            data.first_name.slice(1)}
+                        </h3>
+                        <h4>{data.phone_number}</h4>
+                        <h4>
+                          {data.role.charAt(0).toUpperCase() +
+                            data.role.slice(1)}
+                        </h4>
+                      </div>
+                    </InfoWindowF>
+                  </MarkerF>
+                );
+              }
+            })}
         </GoogleMap>
       ) : (
         <></>

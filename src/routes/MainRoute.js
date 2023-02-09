@@ -43,7 +43,7 @@ export default function MainRoute() {
           <Route path="/" element={<AdminDashboardPage />} />
           <Route path="dashboard" element={<AdminDashboardPage />} />
           <Route path="users" element={<UsersPage />} />
-          <Route path="reports" element={<ReportsPage />} />
+          <Route path="home" element={<HomePage />} />
           <Route
             path="*"
             element={<Navigate to="404" state={{ from: location }} replace />}

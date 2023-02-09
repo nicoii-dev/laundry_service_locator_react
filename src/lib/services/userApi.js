@@ -10,7 +10,7 @@ export default {
   register: (payload) => apiService.post(`/auth/register`, payload),
   login: (payload) => apiService.post(`/auth/login`, payload),
   logout: () => apiService.post(`/auth/logout`, null),
-  getUser: () => apiService.get(`/user`),
+  getUser: () => apiService.get(`/users`),
   updateUser: (id, payload) => apiService.put(`/update-user/${id}`, payload),
   updatePassword: (payload) => apiService.post(`/change-password`, payload),
 
@@ -23,11 +23,6 @@ export default {
     });
   },
 
-  // verifyToken: (data) =>
-  //   apiService.post(`/auth/verify-token`, null, {
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       Authorization: `Bearer ${data}`,
-  //     },
-  //   }),
+  activateUser: (id) => apiService.post(`/users/activate/${id}`),
+  deactivateUser: (id) => apiService.post(`/users/deactivate/${id}`),
 };
