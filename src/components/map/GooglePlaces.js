@@ -54,7 +54,7 @@ function Map(_props) {
     const results = await getGeocode( {latLng: e.latLng} )
     const { lat, lng } = await getLatLng(results[0]);
     const payload  = {
-      street: results[0].address_components[0].long_name,
+      street: '',
       barangay: '',
       formattedAddress: results[0].formatted_address,
       zipcode: '',
